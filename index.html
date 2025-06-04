@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>خدمة للشعب - منصة خدمات </title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- إضافة Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+  <style>
+    :root {
+      --primary-color: #009688;
+      --primary-dark: #00796b;
+      --secondary-color: #f0f0f0;
+      --text-color: #333;
+      --light-text: #555;
+      --white: #fff;
+      --shadow: 0 2px 12px rgba(0,0,0,0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Tahoma', 'Arial', sans-serif;
+      background-color: var(--secondary-color);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+    
+    header {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: var(--white);
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 1.8rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .logo i {
+      font-size: 2rem;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background-color: var(--white);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+    }
+    
+    .search-section {
+      background-color: var(--white);
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+    
+    .search-container {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .search-bar {
+      flex: 1;
+      position: relative;
+    }
+    
+    .search-bar i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--light-text);
+    }
+    
+    input, textarea, select {
+      width: 100%;
+      padding: 0.8rem 1rem 0.8rem 2.5rem;
+      margin: 0.5rem 0;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+    
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(0, 150, 136, 0.2);
+    }
+    
+    .filter-select {
+      width: 200px;
+      padding: 0.8rem 1rem;
+    }
+    
+    .jobs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    
+    .job-card {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: var(--transition);
+      background-color: var(--white);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    
+    .job-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .job-card h3 {
+      margin: 0 0 0.8rem 0;
+      color: var(--primary-dark);
+      font-size: 1.3rem;
+    }
+    
+    .job-card p {
+      margin: 0.3rem 0;
+      color: var(--light-text);
+    }
+    
+    .job-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0.3rem 0;
+      color: var(--light-text);
+    }
+    
+    .job-meta i {
+      color: var(--primary-color);
+    }
+    
+    .job-actions {
+      margin-top: auto;
+      display: flex;
+      gap: 10px;
+      padding-top: 1rem;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.7rem 1.2rem;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      font-size: 1rem;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: var(--white);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .btn-outline {
+      background-color: transparent;
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+    }
+    
+    .btn-outline:hover {
+      background-color: var(--primary-color);
+      color: var(--white);
+    }
+    
+    .add-job-form {
+      background-color: var(--white);
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      margin-top: 3rem;
+    }
+    
+    .form-title {
+      color: var(--primary-dark);
+      margin-bottom: 1.5rem;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .form-footer {
+      display: flex;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+    
+    .no-jobs {
+      text-align: center;
+      padding: 2rem;
+      color: var(--light-text);
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 2rem;
+      gap: 10px;
+    }
+    
+    .page-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background-color: var(--white);
+      border: 1px solid #ddd;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .page-btn.active {
+      background-color: var(--primary-color);
+      color: var(--white);
+      border-color: var(--primary-color);
+    }
+    
+    .page-btn:hover:not(.active) {
+      background-color: var(--secondary-color);
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--primary-dark);
+      color: var(--white);
+      padding: 1rem 2rem;
+      border-radius: 5px;
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      opacity: 0;
+      transition: var(--transition);
+    }
+    
+    .toast.show {
+      opacity: 1;
+    }
+    
+    footer {
+      background-color: var(--primary-dark);
+      color: var(--white);
+      text-align: center;
+      padding: 1.5rem;
+      margin-top: 3rem;
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+    
+    .social-links a {
+      color: var(--white);
+      font-size: 1.5rem;
+      transition: var(--transition);
+    }
+    
+    .social-links a:hover {
+      color: var(--secondary-color);
+    }
+
+    .bismillah {
+      text-align: center;
+      font-size: 1.5rem;
+      color: var(--primary-dark);
+      margin: 1rem 0;
+      font-family: 'Traditional Arabic', Arial, sans-serif;
+    }
+
+    .new-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: #ff5722;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .search-container {
+        flex-direction: column;
+      }
+      
+      .filter-select {
+        width: 100%;
+      }
+      
+      .jobs-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div class="logo">
+        <i class="fas fa-hands-helping"></i>
+        <h1>خدمة للشعب</h1>
+      </div>
+      <p>منصة مجتمعية لتبادل الخدمات</p>
+    </div>
+  </header>
+  
+  <div class="container">
+    <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+    
+    <div class="search-section">
+      <div class="search-container">
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="ابحث بالمدينة أو نوع الخدمة...">
+        </div>
+        <select class="filter-select" id="cityFilter" onchange="filterJobs()">
+          <option value="">كل المدن</option>
+          <option value="الدار البيضاء">الدار البيضاء</option>
+          <option value="الرباط">الرباط</option>
+          <option value="مراكش">مراكش</option>
+          <option value="فاس">فاس</option>
+          <option value="طنجة">طنجة</option>
+          <option value="مكناس">مكناس</option>
+          <option value="أكادير">أكادير</option>
+          <option value="وجدة">وجدة</option>
+        </select>
+      </div>
+    </div>
+    
+    <div id="jobs">
+      <!-- سيتم ملؤها بالوظائف عبر JavaScript -->
+    </div>
+    
+    <div class="pagination" id="pagination">
+      <!-- سيتم ملؤها عبر JavaScript -->
+    </div>
+    
+    <div class="add-job-form">
+      <h2 class="form-title">إضافة خدمة جديدة</h2>
+      <div class="form-group">
+        <label for="name" class="form-label">الإسم الكامل</label>
+        <input type="text" id="name" placeholder="أدخل اسمك الكامل">
+      </div>
+      <div class="form-group">
+        <label for="title" class="form-label">نوع الخدمة</label>
+        <input type="text" id="title" placeholder="مثال: كهربائي، نجار، مدرس خصوصي...">
+      </div>
+      <div class="form-group">
+        <label for="city" class="form-label">المدينة</label>
+        <input type="text" id="city" placeholder="المدينة التي تقدم فيها الخدمة">
+      </div>
+      <div class="form-group">
+        <label for="description" class="form-label">وصف الخدمة (اختياري)</label>
+        <textarea id="description" rows="3" placeholder="أضف وصفًا تفصيليًا للخدمة التي تقدمها"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="contact" class="form-label">معلومات التواصل</label>
+        <input type="text" id="contact" placeholder="رابط الواتساب، الإيميل أو رقم الهاتف">
+      </div>
+      <div class="form-footer">
+        <button class="btn btn-primary" onclick="addJob()">
+          <i class="fas fa-plus-circle"></i> نشر الخدمة
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="toast" id="toast"></div>
+  
+  <footer>
+    <div class="footer-content">
+      <p>منصة "خدمة للشعب" - ربط المجتمع بالخدمات </p>
+      <div class="social-links">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="https://www.instagram.com/achqa_r" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-whatsapp"></i></a>
+      </div>
+      <p>جميع الحقوق محفوظة &copy; <span id="year"></span></p>
+    </div>
+  </footer>
+  
+  <script>
+    // تهيئة Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAvhzUcEu-gwc0-oAsH4b9bmWWjqHxdXi4",
+      authDomain: "supple-fold-384315.firebaseapp.com",
+      databaseURL: "https://supple-fold-384315-default-rtdb.firebaseio.com",
+      projectId: "supple-fold-384315",
+      storageBucket: "supple-fold-384315.firebasestorage.app",
+      messagingSenderId: "63890373479",
+      appId: "1:63890373479:web:b9b2ac197853aa324e4dc2",
+      measurementId: "G-9HPCRLQ9XE"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const jobsRef = database.ref('jobs');
+
+    // بيانات الخدمات
+    let jobs = [];
+    
+    // تحميل الخدمات من Firebase
+    function loadJobs() {
+      jobsRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        jobs = data ? Object.values(data) : [];
+        displayJobs();
+      });
+    }
+    
+    // إعدادات التصفية والترتيب
+    let currentPage = 1;
+    const jobsPerPage = 6;
+    let currentFilter = '';
+    let currentCity = '';
+    
+    // عرض السنة في الفوتر
+    document.getElementById('year').textContent = new Date().getFullYear();
+    
+    // إضافة خدمة جديدة
+    function addJob() {
+      const name = document.getElementById('name').value.trim();
+      const title = document.getElementById('title').value.trim();
+      const city = document.getElementById('city').value.trim();
+      const description = document.getElementById('description').value.trim();
+      const contact = document.getElementById('contact').value.trim();
+      
+      if (!name || !title || !city || !contact) {
+        showToast('عافاك عمر جميع الخانات الإجبارية');
+        return;
+      }
+      
+      const job = {
+        id: Date.now(),
+        name,
+        title,
+        city,
+        description,
+        contact,
+        date: new Date().toISOString()
+      };
+      
+      // إضافة الخدمة إلى Firebase
+      jobsRef.push(job)
+        .then(() => {
+          // مسح الحقول
+          document.getElementById('name').value = '';
+          document.getElementById('title').value = '';
+          document.getElementById('city').value = '';
+          document.getElementById('description').value = '';
+          document.getElementById('contact').value = '';
+          
+          showToast('تم نشر خدمتك بنجاح!');
+        })
+        .catch((error) => {
+          console.error("Error adding job: ", error);
+          showToast('حدث خطأ أثناء نشر الخدمة، حاول مرة أخرى');
+        });
+    }
+    
+    // عرض الخدمات
+    function displayJobs(filteredJobs = jobs) {
+      const jobsDiv = document.getElementById('jobs');
+      const paginationDiv = document.getElementById('pagination');
+      
+      // التصفية
+      let filtered = [...filteredJobs];
+      
+      if (currentFilter) {
+        filtered = filtered.filter(job => 
+          job.title.toLowerCase().includes(currentFilter) || 
+          job.city.toLowerCase().includes(currentFilter) ||
+          (job.description && job.description.toLowerCase().includes(currentFilter))
+        );
+      }
+      
+      if (currentCity) {
+        filtered = filtered.filter(job => job.city === currentCity);
+      }
+      
+      // الترتيب حسب الأحدث
+      filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      // التقسيم إلى صفحات
+      const totalPages = Math.ceil(filtered.length / jobsPerPage);
+      const startIndex = (currentPage - 1) * jobsPerPage;
+      const paginatedJobs = filtered.slice(startIndex, startIndex + jobsPerPage);
+      
+      // عرض الخدمات
+      if (paginatedJobs.length === 0) {
+        jobsDiv.innerHTML = `
+          <div class="no-jobs">
+            <i class="fas fa-search" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+            <h3>لا توجد خدمات متطابقة مع بحثك</h3>
+            <p>حاول تغيير كلمات البحث أو أضف خدمتك الخاصة</p>
+          </div>
+        `;
+      } else {
+        jobsDiv.innerHTML = '<div class="jobs-grid" id="jobsGrid"></div>';
+        const jobsGrid = document.getElementById('jobsGrid');
+        
+        paginatedJobs.forEach((job) => {
+          const contactLink = job.contact.startsWith('http') ? job.contact : 
+                            job.contact.includes('@') ? `mailto:${job.contact}` : 
+                            `tel:${job.contact}`;
+          
+          // تحديد إذا كانت الخدمة جديدة (أقل من 3 أيام)
+          const isNew = new Date() - new Date(job.date) < 3 * 24 * 60 * 60 * 1000;
+          
+          jobsGrid.innerHTML += `
+            <div class="job-card">
+              ${isNew ? '<span class="new-badge">جديد</span>' : ''}
+              <h3>${job.title}</h3>
+              <div class="job-meta">
+                <i class="fas fa-map-marker-alt"></i>
+                <p>${job.city}</p>
+              </div>
+              <div class="job-meta">
+                <i class="fas fa-user"></i>
+                <p>${job.name}</p>
+              </div>
+              ${job.description ? `<p style="margin: 0.8rem 0; color: #666;">${job.description}</p>` : ''}
+              <div class="job-actions">
+                <a href="${contactLink}" class="btn btn-primary" target="_blank">
+                  <i class="fas fa-phone-alt"></i> تواصل
+                </a>
+                <button class="btn btn-outline" onclick="shareJob(${job.id})">
+                  <i class="fas fa-share-alt"></i> مشاركة
+                </button>
+              </div>
+            </div>
+          `;
+        });
+      }
+      
+      // عرض أزرار الصفحات
+      paginationDiv.innerHTML = '';
+      if (totalPages > 1) {
+        for (let i = 1; i <= totalPages; i++) {
+          paginationDiv.innerHTML += `
+            <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
+              ${i}
+            </button>
+          `;
+        }
+      }
+    }
+    
+    // تغيير الصفحة
+    function changePage(page) {
+      currentPage = page;
+      displayJobs();
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+    
+    // تصفية الخدمات
+    function filterJobs() {
+      currentFilter = document.getElementById('searchInput').value.toLowerCase();
+      currentCity = document.getElementById('cityFilter').value;
+      currentPage = 1;
+      displayJobs();
+    }
+    
+    // مشاركة الخدمة
+    function shareJob(jobId) {
+      const job = jobs.find(j => j.id === jobId);
+      if (!job) return;
+      
+      const shareText = `خدمة ${job.title} في ${job.city} - ${job.description || ''}\nللتواصل: ${job.contact}`;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: job.title,
+          text: shareText,
+          url: window.location.href
+        }).catch(err => {
+          console.log('Error sharing:', err);
+          copyToClipboard(shareText);
+        });
+      } else {
+        copyToClipboard(shareText);
+      }
+    }
+    
+    // نسخ إلى الحافظة
+    function copyToClipboard(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      showToast('تم نسخ معلومات الخدمة للحافظة');
+    }
+    
+    // عرض رسالة toast
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+    
+    // عرض الخدمات عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', () => {
+      loadJobs();
+      
+      // إضافة حدث للبحث أثناء الكتابة مع تأخير
+      let searchTimeout;
+      document.getElementById('searchInput').addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(filterJobs, 300);
+      });
+    });
+  </script>
+</body>
+</html>
