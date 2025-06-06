@@ -3,84 +3,271 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>خدمة للشعب - منصة خدمات </title>
+  <title>خدمة للشعب - منصة الخدمات المجتمعية المتكاملة</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- إضافة Firebase SDK -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
   <style>
     :root {
-      --primary-color: #009688;
-      --primary-dark: #00796b;
-      --secondary-color: #f0f0f0;
+      --primary-color: #2c786c;
+      --primary-dark: #004445;
+      --primary-light: #68b0ab;
+      --secondary-color: #f8f1f1;
+      --accent-color: #f9a828;
       --text-color: #333;
       --light-text: #555;
       --white: #fff;
-      --shadow: 0 2px 12px rgba(0,0,0,0.1);
+      --gray: #e0e0e0;
+      --dark-gray: #757575;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       --transition: all 0.3s ease;
+      --border-radius: 8px;
     }
     
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      font-family: 'Tajawal', sans-serif;
     }
     
     body {
-      font-family: 'Tahoma', 'Arial', sans-serif;
       background-color: var(--secondary-color);
       color: var(--text-color);
       line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
     
+    /* Header Styles */
     header {
-      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
       color: var(--white);
-      padding: 1.5rem;
-      text-align: center;
-      font-size: 1.8rem;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      position: relative;
+      padding: 1rem 0;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
     
-    .header-content {
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      max-width: 1200px;
-      margin: 0 auto;
     }
     
     .logo {
       display: flex;
       align-items: center;
       gap: 10px;
+      text-decoration: none;
+      color: var(--white);
     }
     
     .logo i {
       font-size: 2rem;
+      color: var(--accent-color);
+    }
+    
+    .logo h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0;
+    }
+    
+    .logo span {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      display: block;
+    }
+    
+    /* Navigation */
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 1.5rem;
+    }
+    
+    nav a {
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: var(--transition);
+      padding: 0.5rem 0;
+      position: relative;
+    }
+    
+    nav a:hover {
+      color: var(--accent-color);
+    }
+    
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--accent-color);
+      transition: var(--transition);
+    }
+    
+    nav a:hover::after {
+      width: 100%;
+      left: 0;
+    }
+    
+    .user-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .auth-btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: var(--border-radius);
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-login {
+      background-color: transparent;
+      color: var(--white);
+      border: 1px solid var(--white);
+    }
+    
+    .btn-login:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .btn-register {
+      background-color: var(--accent-color);
+      color: var(--white);
+    }
+    
+    .btn-register:hover {
+      background-color: #e69500;
+    }
+    
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-weight: bold;
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .user-dropdown {
+      position: absolute;
+      top: 50px;
+      left: 0;
+      background-color: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      width: 200px;
+      overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+      z-index: 10;
+    }
+    
+    .user-profile:hover .user-dropdown {
+      opacity: 1;
+      visibility: visible;
+      top: 45px;
+    }
+    
+    .user-dropdown a {
+      display: block;
+      padding: 0.8rem 1rem;
+      color: var(--text-color);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    
+    .user-dropdown a:hover {
+      background-color: var(--secondary-color);
+      color: var(--primary-color);
+    }
+    
+    .user-dropdown a i {
+      margin-left: 8px;
+    }
+    
+    /* Main Content */
+    main {
+      flex: 1;
+      padding: 2rem 0;
     }
     
     .container {
-      max-width: 1000px;
-      margin: 2rem auto;
-      padding: 1.5rem;
-      background-color: var(--white);
-      border-radius: 10px;
-      box-shadow: var(--shadow);
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
     }
     
+    .bismillah {
+      text-align: center;
+      font-size: 1.8rem;
+      color: var(--primary-dark);
+      margin: 1rem 0 2rem;
+      font-family: 'Traditional Arabic', Arial, sans-serif;
+    }
+    
+    /* Search Section */
     .search-section {
       background-color: var(--white);
       padding: 1.5rem;
-      border-radius: 10px;
+      border-radius: var(--border-radius);
       box-shadow: var(--shadow);
       margin-bottom: 2rem;
     }
     
+    .section-title {
+      font-size: 1.5rem;
+      color: var(--primary-dark);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .section-title i {
+      color: var(--accent-color);
+    }
+    
     .search-container {
       display: flex;
-      gap: 10px;
+      gap: 1rem;
     }
     
     .search-bar {
@@ -100,8 +287,8 @@
       width: 100%;
       padding: 0.8rem 1rem 0.8rem 2.5rem;
       margin: 0.5rem 0;
-      border-radius: 5px;
-      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      border: 1px solid var(--gray);
       font-family: inherit;
       font-size: 1rem;
       transition: var(--transition);
@@ -110,7 +297,7 @@
     input:focus, textarea:focus, select:focus {
       outline: none;
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 2px rgba(0, 150, 136, 0.2);
+      box-shadow: 0 0 0 2px rgba(44, 120, 108, 0.2);
     }
     
     .filter-select {
@@ -118,6 +305,31 @@
       padding: 0.8rem 1rem;
     }
     
+    /* Categories Section */
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .category-btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: 20px;
+      background-color: var(--white);
+      border: 1px solid var(--gray);
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.9rem;
+    }
+    
+    .category-btn:hover, .category-btn.active {
+      background-color: var(--primary-color);
+      color: var(--white);
+      border-color: var(--primary-color);
+    }
+    
+    /* Jobs Grid */
     .jobs-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -126,19 +338,20 @@
     }
     
     .job-card {
-      border: 1px solid #eee;
-      border-radius: 8px;
+      border: 1px solid var(--gray);
+      border-radius: var(--border-radius);
       padding: 1.5rem;
       transition: var(--transition);
       background-color: var(--white);
       display: flex;
       flex-direction: column;
       position: relative;
+      overflow: hidden;
     }
     
     .job-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
     
     .job-card h3 {
@@ -158,10 +371,19 @@
       gap: 8px;
       margin: 0.3rem 0;
       color: var(--light-text);
+      font-size: 0.9rem;
     }
     
     .job-meta i {
       color: var(--primary-color);
+      width: 16px;
+      text-align: center;
+    }
+    
+    .job-description {
+      margin: 0.8rem 0;
+      color: #666;
+      line-height: 1.5;
     }
     
     .job-actions {
@@ -176,13 +398,15 @@
       align-items: center;
       gap: 8px;
       padding: 0.7rem 1.2rem;
-      border-radius: 5px;
+      border-radius: var(--border-radius);
       text-decoration: none;
       font-weight: 500;
       cursor: pointer;
       transition: var(--transition);
       border: none;
-      font-size: 1rem;
+      font-size: 0.9rem;
+      flex: 1;
+      justify-content: center;
     }
     
     .btn-primary {
@@ -205,10 +429,67 @@
       color: var(--white);
     }
     
+    .btn-danger {
+      background-color: #e74c3c;
+      color: var(--white);
+    }
+    
+    .btn-danger:hover {
+      background-color: #c0392b;
+    }
+    
+    .btn-warning {
+      background-color: #f39c12;
+      color: var(--white);
+    }
+    
+    .btn-warning:hover {
+      background-color: #d35400;
+    }
+    
+    .new-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: var(--accent-color);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      z-index: 1;
+    }
+    
+    .featured-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #e74c3c;
+      color: white;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      z-index: 1;
+    }
+    
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin-top: 0.5rem;
+    }
+    
+    .rating i {
+      color: #f1c40f;
+      font-size: 0.9rem;
+    }
+    
+    /* Add Job Form */
     .add-job-form {
       background-color: var(--white);
       padding: 2rem;
-      border-radius: 10px;
+      border-radius: var(--border-radius);
       box-shadow: var(--shadow);
       margin-top: 3rem;
     }
@@ -218,6 +499,10 @@
       margin-bottom: 1.5rem;
       text-align: center;
       font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
     
     .form-group {
@@ -228,25 +513,44 @@
       display: block;
       margin-bottom: 0.5rem;
       font-weight: 500;
+      color: var(--primary-dark);
     }
     
     .form-footer {
       display: flex;
       justify-content: center;
-      margin-top: 1.5rem;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--gray);
     }
     
+    /* No Jobs Message */
     .no-jobs {
       text-align: center;
-      padding: 2rem;
+      padding: 3rem;
       color: var(--light-text);
+      background-color: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
     }
     
+    .no-jobs i {
+      font-size: 3rem;
+      color: #ccc;
+      margin-bottom: 1rem;
+    }
+    
+    .no-jobs h3 {
+      margin-bottom: 0.5rem;
+      color: var(--primary-dark);
+    }
+    
+    /* Pagination */
     .pagination {
       display: flex;
       justify-content: center;
       margin-top: 2rem;
-      gap: 10px;
+      gap: 8px;
     }
     
     .page-btn {
@@ -257,9 +561,10 @@
       justify-content: center;
       border-radius: 50%;
       background-color: var(--white);
-      border: 1px solid #ddd;
+      border: 1px solid var(--gray);
       cursor: pointer;
       transition: var(--transition);
+      font-weight: 500;
     }
     
     .page-btn.active {
@@ -272,6 +577,7 @@
       background-color: var(--secondary-color);
     }
     
+    /* Toast Notification */
     .toast {
       position: fixed;
       bottom: 20px;
@@ -280,37 +586,385 @@
       background-color: var(--primary-dark);
       color: var(--white);
       padding: 1rem 2rem;
-      border-radius: 5px;
+      border-radius: var(--border-radius);
       box-shadow: var(--shadow);
       z-index: 1000;
       opacity: 0;
       transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     
     .toast.show {
       opacity: 1;
     }
     
+    .toast.success {
+      background-color: #27ae60;
+    }
+    
+    .toast.error {
+      background-color: #e74c3c;
+    }
+    
+    .toast.warning {
+      background-color: #f39c12;
+    }
+    
+    /* Auth Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+    }
+    
+    .modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .modal-content {
+      background-color: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 500px;
+      overflow: hidden;
+      transform: translateY(-20px);
+      transition: var(--transition);
+    }
+    
+    .modal.show .modal-content {
+      transform: translateY(0);
+    }
+    
+    .modal-header {
+      padding: 1.5rem;
+      background-color: var(--primary-color);
+      color: var(--white);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-header h3 {
+      font-size: 1.3rem;
+    }
+    
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--white);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .close-btn:hover {
+      color: var(--accent-color);
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--gray);
+      margin-bottom: 1.5rem;
+    }
+    
+    .auth-tab {
+      padding: 0.8rem 1.5rem;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--light-text);
+      border-bottom: 3px solid transparent;
+      transition: var(--transition);
+    }
+    
+    .auth-tab.active {
+      color: var(--primary-color);
+      border-bottom-color: var(--primary-color);
+    }
+    
+    .auth-form {
+      display: none;
+    }
+    
+    .auth-form.active {
+      display: block;
+    }
+    
+    /* Add Service Modal */
+    #addServiceModal .modal-content {
+      max-width: 600px;
+    }
+    
+    #addServiceForm .form-footer {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--gray);
+    }
+    
+    #addServiceSubmitBtn {
+      display: block;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    
+    /* Dashboard Modal */
+    .modal-dashboard {
+      max-width: 900px;
+    }
+    
+    .dashboard {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--gray);
+    }
+    
+    .dashboard-title {
+      font-size: 1.5rem;
+      color: var(--primary-dark);
+      margin: 0;
+    }
+    
+    .dashboard-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--gray);
+      margin-bottom: 1.5rem;
+    }
+    
+    .dashboard-tab {
+      padding: 0.8rem 1.5rem;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--light-text);
+      border-bottom: 3px solid transparent;
+      transition: var(--transition);
+    }
+    
+    .dashboard-tab.active {
+      color: var(--primary-color);
+      border-bottom-color: var(--primary-color);
+    }
+    
+    .dashboard-content {
+      display: none;
+    }
+    
+    .dashboard-content.active {
+      display: block;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background-color: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      text-align: center;
+      border-top: 4px solid var(--primary-color);
+    }
+    
+    .stat-card h3 {
+      font-size: 1.5rem;
+      color: var(--primary-dark);
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-card p {
+      color: var(--light-text);
+      font-size: 0.9rem;
+    }
+    
+    .user-jobs-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    
+    .user-job-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background-color: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+    
+    .user-job-info h4 {
+      margin: 0 0 0.5rem 0;
+      color: var(--primary-dark);
+    }
+    
+    .user-job-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.9rem;
+      color: var(--light-text);
+    }
+    
+    .user-job-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .user-job-btn {
+      padding: 0.5rem 0.8rem;
+      border-radius: var(--border-radius);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    /* Profile Section */
+    .profile-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background-color: var(--primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 3rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    
+    .profile-avatar-edit {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background-color: var(--accent-color);
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    
+    .profile-name {
+      font-size: 1.5rem;
+      color: var(--primary-dark);
+      margin-bottom: 0.5rem;
+    }
+    
+    .profile-meta {
+      display: flex;
+      gap: 1.5rem;
+      color: var(--light-text);
+      margin-bottom: 1rem;
+    }
+    
+    .profile-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .profile-bio {
+      text-align: center;
+      color: var(--light-text);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    /* Change Password Form */
+    .change-password-form {
+      background-color: var(--white);
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      margin-top: 1.5rem;
+    }
+    
+    /* Footer */
     footer {
       background-color: var(--primary-dark);
       color: var(--white);
       text-align: center;
-      padding: 1.5rem;
+      padding: 2rem 0;
       margin-top: 3rem;
     }
     
     .footer-content {
       max-width: 1200px;
       margin: 0 auto;
+      padding: 0 1.5rem;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.5rem;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .footer-links a {
+      color: var(--white);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    
+    .footer-links a:hover {
+      color: var(--accent-color);
     }
     
     .social-links {
       display: flex;
       justify-content: center;
-      gap: 1rem;
+      gap: 1.5rem;
     }
     
     .social-links a {
@@ -320,35 +974,30 @@
     }
     
     .social-links a:hover {
-      color: var(--secondary-color);
+      color: var(--accent-color);
+      transform: translateY(-3px);
     }
-
-    .bismillah {
-      text-align: center;
-      font-size: 1.5rem;
-      color: var(--primary-dark);
-      margin: 1rem 0;
-      font-family: 'Traditional Arabic', Arial, sans-serif;
+    
+    .copyright {
+      font-size: 0.9rem;
+      opacity: 0.8;
     }
-
-    .new-badge {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background-color: #ff5722;
-      color: white;
-      padding: 3px 8px;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: bold;
-    }
-
-    @media (max-width: 768px) {
-      .header-content {
-        flex-direction: column;
+    
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+      .header-container {
+        flex-wrap: wrap;
         gap: 1rem;
       }
       
+      nav ul {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+      }
+    }
+    
+    @media (max-width: 768px) {
       .search-container {
         flex-direction: column;
       }
@@ -360,104 +1009,516 @@
       .jobs-grid {
         grid-template-columns: 1fr;
       }
+      
+      .form-footer {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+      }
+      
+      .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .user-job-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .user-job-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+      
+      .profile-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .auth-tabs {
+        flex-direction: column;
+        border-bottom: none;
+      }
+      
+      .auth-tab {
+        border-bottom: 1px solid var(--gray);
+      }
+      
+      .dashboard-tabs {
+        flex-direction: column;
+        border-bottom: none;
+      }
+      
+      .dashboard-tab {
+        border-bottom: 1px solid var(--gray);
+      }
+      
+      .modal-content {
+        margin: 0 1rem;
+      }
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.3s ease forwards;
+    }
+    
+    /* Loading Spinner */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--white);
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
+  <!-- Header -->
   <header>
-    <div class="header-content">
-      <div class="logo">
+    <div class="header-container">
+      <a href="#" class="logo">
         <i class="fas fa-hands-helping"></i>
-        <h1>خدمة للشعب</h1>
+        <div>
+          <h1>خدمة للشعب</h1>
+          <span>منصة الخدمات المجتمعية</span>
+        </div>
+      </a>
+      
+      <nav>
+        <ul>
+          <li><a href="#"><i class="fas fa-home"></i> الرئيسية</a></li>
+          <li><a href="#services"><i class="fas fa-list"></i> الخدمات</a></li>
+          <li><a href="#how-it-works"><i class="fas fa-question-circle"></i> كيف تعمل</a></li>
+          <li><a href="#contact"><i class="fas fa-envelope"></i> اتصل بنا</a></li>
+        </ul>
+      </nav>
+      
+      <div class="user-actions" id="userActions">
+        <!-- سيتم ملؤها عبر JavaScript -->
       </div>
-      <p>منصة مجتمعية لتبادل الخدمات</p>
     </div>
   </header>
   
-  <div class="container">
-    <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
-    
-    <div class="search-section">
-      <div class="search-container">
-        <div class="search-bar">
-          <i class="fas fa-search"></i>
-          <input type="text" id="searchInput" placeholder="ابحث بالمدينة أو نوع الخدمة...">
+  <!-- Main Content -->
+  <main>
+    <div class="container">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      
+      <!-- Search Section -->
+      <section class="search-section">
+        <h2 class="section-title"><i class="fas fa-search"></i> ابحث عن الخدمات</h2>
+        <div class="search-container">
+          <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="ابحث بالمدينة أو نوع الخدمة...">
+          </div>
+          <select class="filter-select" id="cityFilter">
+            <option value="">كل المدن</option>
+            <option value="الدار البيضاء">الدار البيضاء</option>
+            <option value="الرباط">الرباط</option>
+            <option value="مراكش">مراكش</option>
+            <option value="فاس">فاس</option>
+            <option value="طنجة">طنجة</option>
+            <option value="مكناس">مكناس</option>
+            <option value="أكادير">أكادير</option>
+            <option value="وجدة">وجدة</option>
+          </select>
         </div>
-        <select class="filter-select" id="cityFilter" onchange="filterJobs()">
-          <option value="">كل المدن</option>
-          <option value="الدار البيضاء">الدار البيضاء</option>
-          <option value="الرباط">الرباط</option>
-          <option value="مراكش">مراكش</option>
-          <option value="فاس">فاس</option>
-          <option value="طنجة">طنجة</option>
-          <option value="مكناس">مكناس</option>
-          <option value="أكادير">أكادير</option>
-          <option value="وجدة">وجدة</option>
-        </select>
-      </div>
+        
+        <!-- Categories -->
+        <div class="categories" id="categories">
+          <!-- سيتم ملؤها عبر JavaScript -->
+        </div>
+      </section>
+      
+      <!-- Services Section -->
+      <section id="services">
+        <div class="section-title">
+          <i class="fas fa-tools"></i>
+          <h2>الخدمات المتاحة</h2>
+          <button class="btn btn-outline" id="addServiceBtn" style="margin-right: auto; display: none;">
+            <i class="fas fa-plus"></i> إضافة خدمة
+          </button>
+        </div>
+        
+        <div id="jobs">
+          <!-- سيتم ملؤها بالوظائف عبر JavaScript -->
+        </div>
+        
+        <div class="pagination" id="pagination">
+          <!-- سيتم ملؤها عبر JavaScript -->
+        </div>
+      </section>
+      
+      <!-- How It Works Section -->
+      <section id="how-it-works" class="add-job-form" style="margin-top: 3rem;">
+        <h2 class="form-title"><i class="fas fa-question-circle"></i> كيف تعمل المنصة؟</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 1.5rem;">
+          <div class="fade-in">
+            <h3 style="color: var(--primary-color); margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;">
+              <i class="fas fa-user-plus"></i> 1. التسجيل
+            </h3>
+            <p>قم بإنشاء حساب مجاني لتتمكن من إضافة خدماتك أو طلب الخدمات من الآخرين</p>
+          </div>
+          <div class="fade-in" style="animation-delay: 0.1s;">
+            <h3 style="color: var(--primary-color); margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;">
+              <i class="fas fa-tools"></i> 2. إضافة الخدمة
+            </h3>
+            <p>أضف خدمتك مع وصف واضح ومعلومات التواصل لتظهر لمقدمي الخدمات</p>
+          </div>
+          <div class="fade-in" style="animation-delay: 0.2s;">
+            <h3 style="color: var(--primary-color); margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;">
+              <i class="fas fa-handshake"></i> 3. التواصل
+            </h3>
+            <p>تواصل مباشرة مع مقدمي الخدمات أو العملاء عبر المعلومات المقدمة</p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Contact Section -->
+      <section id="contact" class="add-job-form" style="margin-top: 3rem;">
+        <h2 class="form-title"><i class="fas fa-envelope"></i> اتصل بنا</h2>
+        <form id="contactForm" style="max-width: 600px; margin: 0 auto;">
+          <div class="form-group">
+            <label for="contactName" class="form-label">اسمك</label>
+            <input type="text" id="contactName" required>
+          </div>
+          <div class="form-group">
+            <label for="contactEmail" class="form-label">بريدك الإلكتروني</label>
+            <input type="email" id="contactEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="contactMessage" class="form-label">رسالتك</label>
+            <textarea id="contactMessage" rows="4" required></textarea>
+          </div>
+          <div class="form-footer">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-paper-plane"></i> إرسال
+            </button>
+          </div>
+        </form>
+      </section>
     </div>
-    
-    <div id="jobs">
-      <!-- سيتم ملؤها بالوظائف عبر JavaScript -->
-    </div>
-    
-    <div class="pagination" id="pagination">
-      <!-- سيتم ملؤها عبر JavaScript -->
-    </div>
-    
-    <div class="add-job-form">
-      <h2 class="form-title">إضافة خدمة جديدة</h2>
-      <div class="form-group">
-        <label for="name" class="form-label">الإسم الكامل</label>
-        <input type="text" id="name" placeholder="أدخل اسمك الكامل">
+  </main>
+  
+  <!-- Auth Modals -->
+  <div class="modal" id="authModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">تسجيل الدخول</h3>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
       </div>
-      <div class="form-group">
-        <label for="title" class="form-label">نوع الخدمة</label>
-        <input type="text" id="title" placeholder="مثال: كهربائي، نجار، مدرس خصوصي...">
-      </div>
-      <div class="form-group">
-        <label for="city" class="form-label">المدينة</label>
-        <input type="text" id="city" placeholder="المدينة التي تقدم فيها الخدمة">
-      </div>
-      <div class="form-group">
-        <label for="description" class="form-label">وصف الخدمة (اختياري)</label>
-        <textarea id="description" rows="3" placeholder="أضف وصفًا تفصيليًا للخدمة التي تقدمها"></textarea>
-      </div>
-      <div class="form-group">
-        <label for="contact" class="form-label">معلومات التواصل</label>
-        <input type="text" id="contact" placeholder="رابط الواتساب، الإيميل أو رقم الهاتف">
-      </div>
-      <div class="form-footer">
-        <button class="btn btn-primary" onclick="addJob()">
-          <i class="fas fa-plus-circle"></i> نشر الخدمة
-        </button>
+      <div class="modal-body">
+        <div class="auth-tabs">
+          <div class="auth-tab active" onclick="switchTab('login')">تسجيل الدخول</div>
+          <div class="auth-tab" onclick="switchTab('register')">إنشاء حساب</div>
+        </div>
+        
+        <form id="loginForm" class="auth-form active">
+          <div class="form-group">
+            <label for="loginEmail">البريد الإلكتروني</label>
+            <input type="email" id="loginEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">كلمة المرور</label>
+            <input type="password" id="loginPassword" required>
+          </div>
+          <div class="form-footer">
+            <button type="button" class="btn btn-primary" onclick="login()" id="loginBtn">
+              تسجيل الدخول
+            </button>
+          </div>
+        </form>
+        
+        <form id="registerForm" class="auth-form">
+          <div class="form-group">
+            <label for="registerName">الاسم الكامل</label>
+            <input type="text" id="registerName" required>
+          </div>
+          <div class="form-group">
+            <label for="registerEmail">البريد الإلكتروني</label>
+            <input type="email" id="registerEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="registerPassword">كلمة المرور</label>
+            <input type="password" id="registerPassword" required>
+          </div>
+          <div class="form-group">
+            <label for="registerConfirmPassword">تأكيد كلمة المرور</label>
+            <input type="password" id="registerConfirmPassword" required>
+          </div>
+          <div class="form-group">
+            <label for="registerPhone">رقم الهاتف</label>
+            <input type="tel" id="registerPhone" required>
+          </div>
+          <div class="form-footer">
+            <button type="button" class="btn btn-primary" onclick="register()" id="registerBtn">
+              إنشاء حساب
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
   
+  <!-- Add Service Modal -->
+  <div class="modal" id="addServiceModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>إضافة خدمة جديدة</h3>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="addServiceForm">
+          <div class="form-group">
+            <label for="serviceTitle" class="form-label">نوع الخدمة</label>
+            <input type="text" id="serviceTitle" placeholder="مثال: كهربائي، نجار، مدرس خصوصي..." required>
+          </div>
+          <div class="form-group">
+            <label for="serviceCategory" class="form-label">التصنيف</label>
+            <select id="serviceCategory" required>
+              <!-- سيتم ملؤها عبر JavaScript -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="serviceCity" class="form-label">المدينة</label>
+            <input type="text" id="serviceCity" placeholder="المدينة التي تقدم فيها الخدمة" required>
+          </div>
+          <div class="form-group">
+            <label for="serviceDescription" class="form-label">وصف الخدمة</label>
+            <textarea id="serviceDescription" rows="4" placeholder="أضف وصفًا تفصيليًا للخدمة التي تقدمها" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="serviceContact" class="form-label">معلومات التواصل</label>
+            <input type="text" id="serviceContact" placeholder="رابط الواتساب، الإيميل أو رقم الهاتف" required>
+          </div>
+          <div class="form-group">
+            <label for="servicePrice" class="form-label">السعر (اختياري)</label>
+            <input type="text" id="servicePrice" placeholder="مثال: 200 درهم أو بالساعة">
+          </div>
+          <div class="form-footer">
+            <button type="submit" class="btn btn-primary" id="addServiceSubmitBtn">
+              <i class="fas fa-save"></i> نشر الخدمة
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Dashboard Modal -->
+  <div class="modal" id="dashboardModal">
+    <div class="modal-content modal-dashboard">
+      <div class="modal-header">
+        <h3>لوحة التحكم</h3>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="dashboard">
+          <div class="profile-section">
+            <div class="profile-avatar" id="profileAvatar">
+              <div class="profile-avatar-edit" onclick="document.getElementById('avatarInput').click()">
+                <i class="fas fa-camera"></i>
+              </div>
+              <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="uploadAvatar(event)">
+            </div>
+            <h3 class="profile-name" id="profileName"></h3>
+            <div class="profile-meta">
+              <div class="profile-meta-item">
+                <i class="fas fa-envelope"></i>
+                <span id="profileEmail"></span>
+              </div>
+              <div class="profile-meta-item">
+                <i class="fas fa-phone"></i>
+                <span id="profilePhone"></span>
+              </div>
+              <div class="profile-meta-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span id="joinDate"></span>
+              </div>
+            </div>
+            <p class="profile-bio" id="profileBio"></p>
+          </div>
+          
+          <div class="dashboard-tabs">
+            <div class="dashboard-tab active" onclick="switchDashboardTab('stats')">
+              <i class="fas fa-chart-bar"></i> الإحصائيات
+            </div>
+            <div class="dashboard-tab" onclick="switchDashboardTab('services')">
+              <i class="fas fa-tools"></i> خدماتي
+            </div>
+            <div class="dashboard-tab" onclick="switchDashboardTab('settings')">
+              <i class="fas fa-cog"></i> الإعدادات
+            </div>
+            <div class="dashboard-tab" onclick="switchDashboardTab('security')">
+              <i class="fas fa-shield-alt"></i> الأمان
+            </div>
+          </div>
+          
+          <div id="statsTab" class="dashboard-content active">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <h3 id="userServicesCount">0</h3>
+                <p>خدماتك</p>
+              </div>
+              <div class="stat-card">
+                <h3 id="userViewsCount">0</h3>
+                <p>عدد المشاهدات</p>
+              </div>
+              <div class="stat-card">
+                <h3 id="userRating">0.0</h3>
+                <p>تقييمك</p>
+              </div>
+              <div class="stat-card">
+                <h3 id="userContacts">0</h3>
+                <p>طلبات التواصل</p>
+              </div>
+            </div>
+            
+            <h4 style="color: var(--primary-dark); margin: 1.5rem 0 1rem;">آخر الخدمات المضافة</h4>
+            <div id="recentServices">
+              <!-- سيتم ملؤها عبر JavaScript -->
+            </div>
+          </div>
+          
+          <div id="servicesTab" class="dashboard-content">
+            <div class="user-jobs-list" id="userJobsList">
+              <!-- سيتم ملؤها عبر JavaScript -->
+            </div>
+          </div>
+          
+          <div id="settingsTab" class="dashboard-content">
+            <form id="settingsForm">
+              <div class="form-group">
+                <label for="userName" class="form-label">الاسم الكامل</label>
+                <input type="text" id="userName" required>
+              </div>
+              <div class="form-group">
+                <label for="userPhone" class="form-label">رقم الهاتف</label>
+                <input type="tel" id="userPhone" required>
+              </div>
+              <div class="form-group">
+                <label for="userBio" class="form-label">نبذة عنك</label>
+                <textarea id="userBio" rows="3"></textarea>
+              </div>
+              <div class="form-footer">
+                <button type="submit" class="btn btn-primary" id="saveSettingsBtn">
+                  <i class="fas fa-save"></i> حفظ التغييرات
+                </button>
+              </div>
+            </form>
+          </div>
+          
+          <div id="securityTab" class="dashboard-content">
+            <div class="change-password-form">
+              <h4 style="color: var(--primary-dark); margin-bottom: 1rem;">
+                <i class="fas fa-shield-alt"></i> تغيير كلمة المرور
+              </h4>
+              <form id="changePasswordForm">
+                <div class="form-group">
+                  <label for="currentPassword">كلمة المرور الحالية</label>
+                  <input type="password" id="currentPassword" required>
+                </div>
+                <div class="form-group">
+                  <label for="newPassword">كلمة المرور الجديدة</label>
+                  <input type="password" id="newPassword" required>
+                </div>
+                <div class="form-group">
+                  <label for="confirmNewPassword">تأكيد كلمة المرور الجديدة</label>
+                  <input type="password" id="confirmNewPassword" required>
+                </div>
+                <div class="form-footer">
+                  <button type="submit" class="btn btn-primary" id="changePasswordBtn">
+                    <i class="fas fa-key"></i> تغيير كلمة المرور
+                  </button>
+                </div>
+              </form>
+            </div>
+            
+            <div class="change-password-form" style="margin-top: 2rem;">
+              <h4 style="color: var(--primary-dark); margin-bottom: 1rem;">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج من جميع الأجهزة
+              </h4>
+              <p style="color: var(--light-text); margin-bottom: 1rem;">
+                سيؤدي هذا إلى تسجيل خروجك من جميع الأجهزة التي قمت بتسجيل الدخول عليها.
+              </p>
+              <button class="btn btn-danger" onclick="logoutAllDevices()">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج من كل مكان
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast Notification -->
   <div class="toast" id="toast"></div>
   
-  <footer>
-    <div class="footer-content">
-      <p>منصة "خدمة للشعب" - ربط المجتمع بالخدمات </p>
-      <div class="social-links">
-        <a href="#"><i class="fab fa-facebook"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="https://www.instagram.com/achqa_r" target="_blank"><i class="fab fa-instagram"></i></a>
-        <a href="#"><i class="fab fa-whatsapp"></i></a>
+   <!-- Footer -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-about">
+      <h4>عن منصة "خدمة للشعب"</h4>
+      <div class="about-section">
+        <h5>رؤيتنا</h5>
+        <p>مبادرة مجتمعية تهدف إلى ربط مقدمي الخدمات مع المستفيدين بطريقة سهلة وآمنة</p>
       </div>
-      <p>جميع الحقوق محفوظة &copy; <span id="year"></span></p>
+      <div class="about-section">
+        <h5>رسالتنا</h5>
+        <p>خلق مجتمع تعاوني يسهل العثور على الخدمات وعرض المهارات</p>
+      </div>
+      <div class="about-section">
+        <h5>مميزات المنصة</h5>
+        <ul>
+          <li>سهولة الاستخدام وواجهة بسيطة</li>
+          <li>مجانية بالكامل بدون رسوم</li>
+          <li>تصنيفات متعددة لكافة الخدمات</li>
+          <li>حماية الخصوصية وأمان البيانات</li>
+          <li>نظام تقييم يضمن جودة الخدمات</li>
+        </ul>
+      </div>
+    </div>
+      
+          <div class="social-links">
+      <a href="https://www.facebook.com/61553074376249prf?locale=ar_AR"><i class="fab fa-facebook"></i></a>
+      <a href="https://x.com/achqar_yassin"><i class="fab fa-twitter"></i></a>
+      <a href="https://www.instagram.com/achqa_r" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://wa.me/212718715382"><i class="fab fa-whatsapp"></i></a>
+    </div>
+      <p class="copyright">جميع الحقوق محفوظة &copy; <span id="year"></span> خدمة للشعب</p>
     </div>
   </footer>
   
   <script>
+    // ======================
     // تهيئة Firebase
+    // ======================
     const firebaseConfig = {
       apiKey: "AIzaSyAvhzUcEu-gwc0-oAsH4b9bmWWjqHxdXi4",
       authDomain: "supple-fold-384315.firebaseapp.com",
       databaseURL: "https://supple-fold-384315-default-rtdb.firebaseio.com",
       projectId: "supple-fold-384315",
-      storageBucket: "supple-fold-384315.firebasestorage.app",
+      storageBucket: "supple-fold-384315.appspot.com",
       messagingSenderId: "63890373479",
       appId: "1:63890373479:web:b9b2ac197853aa324e4dc2",
       measurementId: "G-9HPCRLQ9XE"
@@ -466,71 +1527,597 @@
     // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
-    const jobsRef = database.ref('jobs');
-
-    // بيانات الخدمات
-    let jobs = [];
+    const auth = firebase.auth();
     
-    // تحميل الخدمات من Firebase
-    function loadJobs() {
-      jobsRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        jobs = data ? Object.values(data) : [];
-        displayJobs();
-      });
-    }
+    // مراجع قاعدة البيانات
+    const jobsRef = database.ref('jobs');
+    const usersRef = database.ref('users');
+    const categoriesRef = database.ref('categories');
+    const userAvatarsRef = database.ref('userAvatars');
+    
+    // بيانات التطبيق
+    let currentUser = null;
+    let jobs = [];
+    let users = [];
+    let categories = [];
     
     // إعدادات التصفية والترتيب
     let currentPage = 1;
     const jobsPerPage = 6;
     let currentFilter = '';
     let currentCity = '';
+    let currentCategory = '';
     
-    // عرض السنة في الفوتر
-    document.getElementById('year').textContent = new Date().getFullYear();
+    // عناصر واجهة المستخدم
+    const authModal = document.getElementById('authModal');
+    const addServiceModal = document.getElementById('addServiceModal');
+    const dashboardModal = document.getElementById('dashboardModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const userActionsEl = document.getElementById('userActions');
     
-    // إضافة خدمة جديدة
-    function addJob() {
-      const name = document.getElementById('name').value.trim();
-      const title = document.getElementById('title').value.trim();
-      const city = document.getElementById('city').value.trim();
-      const description = document.getElementById('description').value.trim();
-      const contact = document.getElementById('contact').value.trim();
+    // ======================
+    // نظام المصادقة
+    // ======================
+    
+    // تسجيل الدخول
+    function login() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const loginBtn = document.getElementById('loginBtn');
       
-      if (!name || !title || !city || !contact) {
-        showToast('عافاك عمر جميع الخانات الإجبارية');
+      if (!email || !password) {
+        showToast('الرجاء إدخال البريد الإلكتروني وكلمة المرور', 'error');
         return;
       }
       
-      const job = {
-        id: Date.now(),
-        name,
-        title,
-        city,
-        description,
-        contact,
-        date: new Date().toISOString()
-      };
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<span class="spinner"></span> جاري تسجيل الدخول...';
       
-      // إضافة الخدمة إلى Firebase
-      jobsRef.push(job)
-        .then(() => {
-          // مسح الحقول
-          document.getElementById('name').value = '';
-          document.getElementById('title').value = '';
-          document.getElementById('city').value = '';
-          document.getElementById('description').value = '';
-          document.getElementById('contact').value = '';
-          
-          showToast('تم نشر خدمتك بنجاح!');
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          currentUser = userCredential.user;
+          closeModal();
+          showToast('تم تسجيل الدخول بنجاح', 'success');
+          updateUI();
+          loadUserData();
         })
         .catch((error) => {
-          console.error("Error adding job: ", error);
-          showToast('حدث خطأ أثناء نشر الخدمة، حاول مرة أخرى');
+          showToast(getAuthErrorMessage(error), 'error');
+        })
+        .finally(() => {
+          loginBtn.disabled = false;
+          loginBtn.textContent = 'تسجيل الدخول';
         });
     }
     
+    // تسجيل مستخدم جديد
+    function register() {
+      const name = document.getElementById('registerName').value;
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+      const confirmPassword = document.getElementById('registerConfirmPassword').value;
+      const phone = document.getElementById('registerPhone').value;
+      const registerBtn = document.getElementById('registerBtn');
+      
+      if (!name || !email || !password || !confirmPassword || !phone) {
+        showToast('الرجاء إدخال جميع الحقول المطلوبة', 'error');
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        showToast('كلمة المرور غير متطابقة', 'error');
+        return;
+      }
+      
+      registerBtn.disabled = true;
+      registerBtn.innerHTML = '<span class="spinner"></span> جاري إنشاء الحساب...';
+      
+      auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          currentUser = userCredential.user;
+          
+          // حفظ بيانات المستخدم الإضافية
+          return usersRef.child(currentUser.uid).set({
+            name: name,
+            email: email,
+            phone: phone,
+            bio: '',
+            createdAt: firebase.database.ServerValue.TIMESTAMP,
+            avatar: ''
+          });
+        })
+        .then(() => {
+          // إرسال بريد التحقق
+          return currentUser.sendEmailVerification();
+        })
+        .then(() => {
+          closeModal();
+          showToast('تم إنشاء الحساب بنجاح. يرجى التحقق من بريدك الإلكتروني', 'success');
+          updateUI();
+          loadUserData();
+        })
+        .catch((error) => {
+          showToast(getAuthErrorMessage(error), 'error');
+        })
+        .finally(() => {
+          registerBtn.disabled = false;
+          registerBtn.textContent = 'إنشاء حساب';
+        });
+    }
+    
+    // تسجيل الخروج
+    function logout() {
+      auth.signOut().then(() => {
+        currentUser = null;
+        closeModal();
+        showToast('تم تسجيل الخروج بنجاح', 'success');
+        updateUI();
+      });
+    }
+    
+    // تسجيل الخروج من جميع الأجهزة
+    function logoutAllDevices() {
+      if (!confirm('هل أنت متأكد من تسجيل الخروج من جميع الأجهزة؟ سيطلب منك تسجيل الدخول مرة أخرى.')) return;
+      
+      auth.signOut().then(() => {
+        // هنا يمكنك إضافة أي إجراءات إضافية مثل مسح بيانات التخزين المحلي
+        currentUser = null;
+        closeModal();
+        showToast('تم تسجيل الخروج من جميع الأجهزة', 'success');
+        updateUI();
+      });
+    }
+    
+    // تغيير كلمة المرور
+    function changePassword() {
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+      const changePasswordBtn = document.getElementById('changePasswordBtn');
+      
+      if (!currentPassword || !newPassword || !confirmNewPassword) {
+        showToast('الرجاء إدخال جميع الحقول', 'error');
+        return;
+      }
+      
+      if (newPassword !== confirmNewPassword) {
+        showToast('كلمة المرور الجديدة غير متطابقة', 'error');
+        return;
+      }
+      
+      if (newPassword.length < 6) {
+        showToast('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+        return;
+      }
+      
+      changePasswordBtn.disabled = true;
+      changePasswordBtn.innerHTML = '<span class="spinner"></span> جاري التغيير...';
+      
+      // إعادة المصادقة لتأكيد كلمة المرور الحالية
+      const credential = firebase.auth.EmailAuthProvider.credential(
+        currentUser.email,
+        currentPassword
+      );
+      
+      currentUser.reauthenticateWithCredential(credential)
+        .then(() => {
+          // تغيير كلمة المرور
+          return currentUser.updatePassword(newPassword);
+        })
+        .then(() => {
+          showToast('تم تغيير كلمة المرور بنجاح', 'success');
+          document.getElementById('changePasswordForm').reset();
+        })
+        .catch((error) => {
+          showToast(getAuthErrorMessage(error), 'error');
+        })
+        .finally(() => {
+          changePasswordBtn.disabled = false;
+          changePasswordBtn.innerHTML = '<i class="fas fa-key"></i> تغيير كلمة المرور';
+        });
+    }
+    
+    // تحويل أخطاء المصادقة لرسائل مفهومة
+    function getAuthErrorMessage(error) {
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          return 'البريد الإلكتروني مستخدم بالفعل';
+        case 'auth/invalid-email':
+          return 'بريد إلكتروني غير صالح';
+        case 'auth/weak-password':
+          return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+        case 'auth/user-not-found':
+          return 'لا يوجد حساب بهذا البريد الإلكتروني';
+        case 'auth/wrong-password':
+          return 'كلمة المرور غير صحيحة';
+        case 'auth/requires-recent-login':
+          return 'يجب تسجيل الدخول مرة أخرى لإجراء هذا التغيير';
+        default:
+          return 'حدث خطأ، يرجى المحاولة لاحقًا';
+      }
+    }
+    
+    // ======================
+    // إدارة الخدمات
+    // ======================
+    
+    // إضافة خدمة جديدة
+    function addService() {
+      if (!currentUser) {
+        showToast('يجب تسجيل الدخول أولاً', 'error');
+        openModal('login');
+        return;
+      }
+      
+      const title = document.getElementById('serviceTitle').value.trim();
+      const category = document.getElementById('serviceCategory').value;
+      const city = document.getElementById('serviceCity').value.trim();
+      const description = document.getElementById('serviceDescription').value.trim();
+      const contact = document.getElementById('serviceContact').value.trim();
+      const price = document.getElementById('servicePrice').value.trim();
+      const addServiceSubmitBtn = document.getElementById('addServiceSubmitBtn');
+      
+      if (!title || !category || !city || !description || !contact) {
+        showToast('الرجاء إدخال جميع الحقول المطلوبة', 'error');
+        return;
+      }
+      
+      addServiceSubmitBtn.disabled = true;
+      addServiceSubmitBtn.innerHTML = '<span class="spinner"></span> جاري النشر...';
+      
+      const job = {
+        title,
+        category,
+        city,
+        description,
+        contact,
+        price: price || 'غير محدد',
+        userId: currentUser.uid,
+        userName: currentUser.displayName || 'مستخدم',
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+        views: 0,
+        rating: 0,
+        ratingCount: 0,
+        isFeatured: false
+      };
+      
+      jobsRef.push(job)
+        .then(() => {
+          // مسح الحقول
+          document.getElementById('serviceTitle').value = '';
+          document.getElementById('serviceCity').value = '';
+          document.getElementById('serviceDescription').value = '';
+          document.getElementById('serviceContact').value = '';
+          document.getElementById('servicePrice').value = '';
+          
+          closeModal();
+          showToast('تم نشر الخدمة بنجاح', 'success');
+        })
+        .catch((error) => {
+          showToast('حدث خطأ أثناء نشر الخدمة', 'error');
+          console.error(error);
+        })
+        .finally(() => {
+          addServiceSubmitBtn.disabled = false;
+          addServiceSubmitBtn.innerHTML = '<i class="fas fa-save"></i> نشر الخدمة';
+        });
+    }
+    
+    // حذف خدمة
+    function deleteJob(jobId) {
+      if (!confirm('هل أنت متأكد من حذف هذه الخدمة؟')) return;
+      
+      jobsRef.child(jobId).remove()
+        .then(() => {
+          showToast('تم حذف الخدمة بنجاح', 'success');
+          loadUserJobs();
+        })
+        .catch((error) => {
+          showToast('حدث خطأ أثناء حذف الخدمة', 'error');
+          console.error(error);
+        });
+    }
+    
+    // تحميل خدمات المستخدم
+    function loadUserJobs() {
+      if (!currentUser) return;
+      
+      jobsRef.orderByChild('userId').equalTo(currentUser.uid).once('value')
+        .then((snapshot) => {
+          const jobs = [];
+          snapshot.forEach((childSnapshot) => {
+            jobs.push({
+              id: childSnapshot.key,
+              ...childSnapshot.val()
+            });
+          });
+          
+          updateUserJobsList(jobs);
+        });
+    }
+    
+    // تحديث قائمة خدمات المستخدم
+    function updateUserJobsList(userJobs) {
+      const userJobsList = document.getElementById('userJobsList');
+      userJobsList.innerHTML = '';
+      
+      if (userJobs.length === 0) {
+        userJobsList.innerHTML = `
+          <div style="text-align: center; padding: 1rem; color: var(--light-text);">
+            <i class="fas fa-info-circle" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+            <p>لا توجد خدمات مضافة حتى الآن</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // عرض الخدمات
+      userJobs.forEach(job => {
+        const jobEl = document.createElement('div');
+        jobEl.className = 'user-job-card';
+        jobEl.innerHTML = `
+          <div class="user-job-info">
+            <h4>${job.title}</h4>
+            <div class="user-job-meta">
+              <span><i class="fas fa-map-marker-alt"></i> ${job.city}</span>
+              <span><i class="fas fa-tag"></i> ${job.category}</span>
+              <span><i class="fas fa-eye"></i> ${job.views || 0} مشاهدة</span>
+            </div>
+          </div>
+          <div class="user-job-actions">
+            <button class="user-job-btn btn-warning" onclick="editJob('${job.id}')">
+              <i class="fas fa-edit"></i> تعديل
+            </button>
+            <button class="user-job-btn btn-danger" onclick="deleteJob('${job.id}')">
+              <i class="fas fa-trash"></i> حذف
+            </button>
+          </div>
+        `;
+        
+        userJobsList.appendChild(jobEl);
+      });
+    }
+    
+    // ======================
+    // إدارة الملف الشخصي
+    // ======================
+    
+    // تحميل بيانات المستخدم
+    function loadUserData() {
+      if (!currentUser) return;
+      
+      usersRef.child(currentUser.uid).once('value')
+        .then((snapshot) => {
+          const userData = snapshot.val();
+          if (userData) {
+            currentUser.displayName = userData.name;
+            currentUser.phone = userData.phone;
+            currentUser.bio = userData.bio;
+            currentUser.avatar = userData.avatar;
+            currentUser.createdAt = userData.createdAt;
+            
+            updateUI();
+            updateProfileInfo(userData);
+          }
+        });
+      
+      loadUserJobs();
+    }
+    
+    // تحديث معلومات الملف الشخصي
+    function updateProfileInfo(userData) {
+      document.getElementById('profileName').textContent = userData.name || 'مستخدم';
+      document.getElementById('profileEmail').textContent = currentUser.email;
+      document.getElementById('profilePhone').textContent = userData.phone || 'غير محدد';
+      document.getElementById('profileBio').textContent = userData.bio || 'لا يوجد وصف';
+      
+      // عرض تاريخ الانضمام
+      if (userData.createdAt) {
+        const joinDate = new Date(userData.createdAt);
+        document.getElementById('joinDate').textContent = joinDate.toLocaleDateString('ar-SA');
+      }
+      
+      // عرض الصورة الشخصية
+      const avatarEl = document.getElementById('profileAvatar');
+      if (userData.avatar) {
+        avatarEl.style.backgroundImage = `url(${userData.avatar})`;
+        avatarEl.textContent = '';
+      } else {
+        avatarEl.style.backgroundImage = '';
+        avatarEl.textContent = currentUser.email.charAt(0).toUpperCase();
+      }
+      
+      // تحديث نموذج الإعدادات
+      document.getElementById('userName').value = userData.name || '';
+      document.getElementById('userPhone').value = userData.phone || '';
+      document.getElementById('userBio').value = userData.bio || '';
+    }
+    
+    // رفع صورة الملف الشخصي
+    function uploadAvatar(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      if (!file.type.match('image.*')) {
+        showToast('الرجاء اختيار ملف صورة', 'error');
+        return;
+      }
+      
+      if (file.size > 2 * 1024 * 1024) {
+        showToast('حجم الصورة يجب أن يكون أقل من 2MB', 'error');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const avatarUrl = e.target.result;
+        
+        // حفظ الصورة في قاعدة البيانات
+        userAvatarsRef.child(currentUser.uid).set(avatarUrl)
+          .then(() => {
+            // تحديث رابط الصورة في بيانات المستخدم
+            return usersRef.child(currentUser.uid).update({
+              avatar: avatarUrl
+            });
+          })
+          .then(() => {
+            currentUser.avatar = avatarUrl;
+            updateUI();
+            updateProfileInfo(currentUser);
+            showToast('تم تحديث الصورة الشخصية بنجاح', 'success');
+          })
+          .catch((error) => {
+            showToast('حدث خطأ أثناء رفع الصورة', 'error');
+            console.error(error);
+          });
+      };
+      reader.readAsDataURL(file);
+    }
+    
+    // حفظ إعدادات المستخدم
+    function saveUserSettings() {
+      const name = document.getElementById('userName').value.trim();
+      const phone = document.getElementById('userPhone').value.trim();
+      const bio = document.getElementById('userBio').value.trim();
+      const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+      
+      if (!name) {
+        showToast('الرجاء إدخال الاسم الكامل', 'error');
+        return;
+      }
+      
+      saveSettingsBtn.disabled = true;
+      saveSettingsBtn.innerHTML = '<span class="spinner"></span> جاري الحفظ...';
+      
+      usersRef.child(currentUser.uid).update({
+        name: name,
+        phone: phone,
+        bio: bio
+      })
+      .then(() => {
+        currentUser.displayName = name;
+        currentUser.phone = phone;
+        currentUser.bio = bio;
+        
+        showToast('تم حفظ التغييرات بنجاح', 'success');
+        updateUI();
+        updateProfileInfo({
+          name: name,
+          phone: phone,
+          bio: bio,
+          email: currentUser.email,
+          avatar: currentUser.avatar,
+          createdAt: currentUser.createdAt
+        });
+      })
+      .catch((error) => {
+        showToast('حدث خطأ أثناء حفظ التغييرات', 'error');
+        console.error(error);
+      })
+      .finally(() => {
+        saveSettingsBtn.disabled = false;
+        saveSettingsBtn.innerHTML = '<i class="fas fa-save"></i> حفظ التغييرات';
+      });
+    }
+    
+    // ======================
     // عرض الخدمات
+    // ======================
+    
+    // تحميل جميع الخدمات
+    function loadJobs() {
+      jobsRef.on('value', (snapshot) => {
+        jobs = [];
+        snapshot.forEach((childSnapshot) => {
+          jobs.push({
+            id: childSnapshot.key,
+            ...childSnapshot.val()
+          });
+        });
+        
+        displayJobs();
+      });
+    }
+    
+    // تحميل التصنيفات
+    function loadCategories() {
+      categoriesRef.on('value', (snapshot) => {
+        categories = [];
+        snapshot.forEach((childSnapshot) => {
+          categories.push({
+            id: childSnapshot.key,
+            ...childSnapshot.val()
+          });
+        });
+        
+        updateCategoriesUI();
+        
+        // إذا لم يكن هناك تصنيفات، نضيف بعض التصنيفات الافتراضية
+        if (categories.length === 0) {
+          const defaultCategories = [
+            { name: 'كهرباء', icon: 'bolt' },
+            { name: 'سباكة', icon: 'faucet' },
+            { name: 'نجارة', icon: 'hammer' },
+            { name: 'تعليم', icon: 'graduation-cap' },
+            { name: 'تصميم', icon: 'paint-brush' },
+            { name: 'برمجة', icon: 'code' },
+            { name: 'صيانة', icon: 'tools' },
+            { name: 'نقل', icon: 'truck' }
+          ];
+          
+          defaultCategories.forEach((cat, index) => {
+            categoriesRef.push({
+              name: cat.name,
+              icon: cat.icon,
+              order: index
+            });
+          });
+        }
+      });
+    }
+    
+    // تحديث واجهة التصنيفات
+    function updateCategoriesUI() {
+      const categoriesContainer = document.getElementById('categories');
+      const serviceCategorySelect = document.getElementById('serviceCategory');
+      
+      // مسح المحتوى الحالي
+      categoriesContainer.innerHTML = '';
+      serviceCategorySelect.innerHTML = '<option value="">اختر تصنيفًا</option>';
+      
+      // إضافة التصنيفات إلى واجهة البحث
+      categories.forEach(category => {
+        const btn = document.createElement('button');
+        btn.className = 'category-btn';
+        btn.innerHTML = `<i class="fas fa-${category.icon}"></i> ${category.name}`;
+        btn.onclick = () => filterByCategory(category.id);
+        categoriesContainer.appendChild(btn);
+        
+        // إضافة التصنيفات إلى نموذج إضافة الخدمة
+        const option = document.createElement('option');
+        option.value = category.id;
+        option.textContent = category.name;
+        serviceCategorySelect.appendChild(option);
+      });
+    }
+    
+    // تصفية حسب التصنيف
+    function filterByCategory(categoryId) {
+      currentCategory = categoryId;
+      currentPage = 1;
+      displayJobs();
+      
+      // تحديث حالة أزرار التصنيفات
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      if (categoryId) {
+        event.target.classList.add('active');
+      }
+    }
+    
+    // عرض الخدمات في الصفحة الرئيسية
     function displayJobs(filteredJobs = jobs) {
       const jobsDiv = document.getElementById('jobs');
       const paginationDiv = document.getElementById('pagination');
@@ -550,8 +2137,16 @@
         filtered = filtered.filter(job => job.city === currentCity);
       }
       
-      // الترتيب حسب الأحدث
-      filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+      if (currentCategory) {
+        filtered = filtered.filter(job => job.category === currentCategory);
+      }
+      
+      // الترتيب حسب المميز ثم الأحدث
+      filtered.sort((a, b) => {
+        if (a.isFeatured && !b.isFeatured) return -1;
+        if (!a.isFeatured && b.isFeatured) return 1;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
       
       // التقسيم إلى صفحات
       const totalPages = Math.ceil(filtered.length / jobsPerPage);
@@ -562,7 +2157,7 @@
       if (paginatedJobs.length === 0) {
         jobsDiv.innerHTML = `
           <div class="no-jobs">
-            <i class="fas fa-search" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+            <i class="fas fa-search"></i>
             <h3>لا توجد خدمات متطابقة مع بحثك</h3>
             <p>حاول تغيير كلمات البحث أو أضف خدمتك الخاصة</p>
           </div>
@@ -577,26 +2172,52 @@
                             `tel:${job.contact}`;
           
           // تحديد إذا كانت الخدمة جديدة (أقل من 3 أيام)
-          const isNew = new Date() - new Date(job.date) < 3 * 24 * 60 * 60 * 1000;
+          const isNew = Date.now() - job.createdAt < 3 * 24 * 60 * 60 * 1000;
+          
+          // حساب التقييم
+          const rating = job.ratingCount > 0 ? (job.rating / job.ratingCount).toFixed(1) : 0;
+          
+          // العثور على أيقونة التصنيف
+          const category = categories.find(cat => cat.id === job.category);
+          const categoryIcon = category ? `fa-${category.icon}` : 'fa-tag';
+          const categoryName = category ? category.name : 'عام';
           
           jobsGrid.innerHTML += `
             <div class="job-card">
               ${isNew ? '<span class="new-badge">جديد</span>' : ''}
+              ${job.isFeatured ? '<span class="featured-badge">مميز</span>' : ''}
               <h3>${job.title}</h3>
+              <div class="job-meta">
+                <i class="fas fa-${categoryIcon}"></i>
+                <p>${categoryName}</p>
+              </div>
               <div class="job-meta">
                 <i class="fas fa-map-marker-alt"></i>
                 <p>${job.city}</p>
               </div>
               <div class="job-meta">
                 <i class="fas fa-user"></i>
-                <p>${job.name}</p>
+                <p>${job.userName}</p>
               </div>
-              ${job.description ? `<p style="margin: 0.8rem 0; color: #666;">${job.description}</p>` : ''}
+              <div class="job-meta">
+                <i class="fas fa-money-bill-wave"></i>
+                <p>${job.price || 'غير محدد'}</p>
+              </div>
+              
+              ${job.description ? `<p class="job-description">${job.description}</p>` : ''}
+              
+              ${rating > 0 ? `
+                <div class="rating">
+                  <i class="fas fa-star"></i>
+                  <span>${rating} (${job.ratingCount})</span>
+                </div>
+              ` : ''}
+              
               <div class="job-actions">
                 <a href="${contactLink}" class="btn btn-primary" target="_blank">
                   <i class="fas fa-phone-alt"></i> تواصل
                 </a>
-                <button class="btn btn-outline" onclick="shareJob(${job.id})">
+                <button class="btn btn-outline" onclick="shareJob('${job.id}')">
                   <i class="fas fa-share-alt"></i> مشاركة
                 </button>
               </div>
@@ -608,10 +2229,32 @@
       // عرض أزرار الصفحات
       paginationDiv.innerHTML = '';
       if (totalPages > 1) {
-        for (let i = 1; i <= totalPages; i++) {
+        // زر السابق
+        if (currentPage > 1) {
+          paginationDiv.innerHTML += `
+            <button class="page-btn" onclick="changePage(${currentPage - 1})">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          `;
+        }
+        
+        // أزرار الصفحات
+        const startPage = Math.max(1, currentPage - 2);
+        const endPage = Math.min(totalPages, currentPage + 2);
+        
+        for (let i = startPage; i <= endPage; i++) {
           paginationDiv.innerHTML += `
             <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
               ${i}
+            </button>
+          `;
+        }
+        
+        // زر التالي
+        if (currentPage < totalPages) {
+          paginationDiv.innerHTML += `
+            <button class="page-btn" onclick="changePage(${currentPage + 1})">
+              <i class="fas fa-chevron-left"></i>
             </button>
           `;
         }
@@ -638,7 +2281,7 @@
       const job = jobs.find(j => j.id === jobId);
       if (!job) return;
       
-      const shareText = `خدمة ${job.title} في ${job.city} - ${job.description || ''}\nللتواصل: ${job.contact}`;
+      const shareText = `خدمة ${job.title} في ${job.city} - ${job.description || ''}\nالسعر: ${job.price || 'غير محدد'}\nللتواصل: ${job.contact}`;
       
       if (navigator.share) {
         navigator.share({
@@ -654,6 +2297,75 @@
       }
     }
     
+    // ======================
+    // واجهات المستخدم
+    // ======================
+    
+    // فتح النافذة المنبثقة
+    function openModal(type) {
+      if (type === 'login' || type === 'register') {
+        switchTab(type);
+        modalTitle.textContent = type === 'login' ? 'تسجيل الدخول' : 'إنشاء حساب';
+        authModal.classList.add('show');
+      } else if (type === 'addService') {
+        addServiceModal.classList.add('show');
+      } else if (type === 'dashboard') {
+        dashboardModal.classList.add('show');
+        loadUserData();
+      }
+    }
+    
+    // إغلاق النافذة المنبثقة
+    function closeModal() {
+      document.querySelectorAll('.modal').forEach(modal => {
+        modal.classList.remove('show');
+      });
+    }
+    
+    // تبديل بين تسجيل الدخول وإنشاء حساب
+    function switchTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach(tabEl => {
+        tabEl.classList.remove('active');
+      });
+      
+      document.querySelectorAll('.auth-form').forEach(form => {
+        form.classList.remove('active');
+      });
+      
+      document.querySelector(`.auth-tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+      document.getElementById(`${tab}Form`).classList.add('active');
+    }
+    
+    // تبديل بين تبويبات لوحة التحكم
+    function switchDashboardTab(tab) {
+      document.querySelectorAll('.dashboard-tab').forEach(tabEl => {
+        tabEl.classList.remove('active');
+      });
+      
+      document.querySelectorAll('.dashboard-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      document.querySelector(`.dashboard-tab[onclick="switchDashboardTab('${tab}')"]`).classList.add('active');
+      document.getElementById(`${tab}Tab`).classList.add('active');
+    }
+    
+    // عرض رسالة toast
+    function showToast(message, type = '') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast';
+      toast.classList.add('show');
+      
+      if (type) {
+        toast.classList.add(type);
+      }
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+    
     // نسخ إلى الحافظة
     function copyToClipboard(text) {
       const textarea = document.createElement('textarea');
@@ -662,23 +2374,100 @@
       textarea.select();
       document.execCommand('copy');
       document.body.removeChild(textarea);
-      showToast('تم نسخ معلومات الخدمة للحافظة');
+      showToast('تم نسخ المعلومات للحافظة', 'success');
     }
     
-    // عرض رسالة toast
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.classList.add('show');
+    // تحديث واجهة المستخدم حسب حالة التسجيل
+    function updateUI() {
+      if (currentUser) {
+        // حالة تسجيل الدخول
+        const avatarLetter = currentUser.email ? currentUser.email.charAt(0).toUpperCase() : 'م';
+        
+        userActionsEl.innerHTML = `
+          <div class="user-profile">
+            <div class="user-avatar" style="${currentUser.avatar ? `background-image: url(${currentUser.avatar})` : ''}">
+              ${currentUser.avatar ? '' : avatarLetter}
+            </div>
+            <span>${currentUser.displayName || currentUser.email}</span>
+            <div class="user-dropdown">
+              <a href="#" onclick="openModal('dashboard'); return false;"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
+              <a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+            </div>
+          </div>
+        `;
+        
+        document.getElementById('addServiceBtn').style.display = 'block';
+      } else {
+        // حالة الزائر
+        userActionsEl.innerHTML = `
+          <button class="auth-btn btn-login" onclick="openModal('login')">
+            <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+          </button>
+          <button class="auth-btn btn-register" onclick="openModal('register')">
+            <i class="fas fa-user-plus"></i> إنشاء حساب
+          </button>
+        `;
+        
+        document.getElementById('addServiceBtn').style.display = 'none';
+      }
+    }
+    
+    // ======================
+    // متابعة حالة المصادقة
+    // ======================
+    auth.onAuthStateChanged((user) => {
+      currentUser = user;
+      updateUI();
       
-      setTimeout(() => {
-        toast.classList.remove('show');
-      }, 3000);
-    }
+      if (user) {
+        loadUserData();
+      }
+    });
     
-    // عرض الخدمات عند تحميل الصفحة
+    // ======================
+    // إعداد النماذج
+    // ======================
+    document.getElementById('addServiceBtn').addEventListener('click', () => {
+      openModal('addService');
+    });
+    
+    document.getElementById('addServiceForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      addService();
+    });
+    
+    document.getElementById('settingsForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      saveUserSettings();
+    });
+    
+    document.getElementById('changePasswordForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      changePassword();
+    });
+    
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('contactName').value;
+      const email = document.getElementById('contactEmail').value;
+      const message = document.getElementById('contactMessage').value;
+      
+      // هنا يمكنك إضافة كود لإرسال الرسالة
+      showToast('شكرًا لتواصلك، سنرد عليك قريبًا', 'success');
+      document.getElementById('contactForm').reset();
+    });
+    
+    // ======================
+    // تهيئة التطبيق
+    // ======================
     document.addEventListener('DOMContentLoaded', () => {
+      // عرض السنة في الفوتر
+      document.getElementById('year').textContent = new Date().getFullYear();
+      
+      // تحميل البيانات
       loadJobs();
+      loadCategories();
+      updateUI();
       
       // إضافة حدث للبحث أثناء الكتابة مع تأخير
       let searchTimeout;
@@ -686,6 +2475,9 @@
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(filterJobs, 300);
       });
+      
+      // إضافة حدث لتصفية المدن
+      document.getElementById('cityFilter').addEventListener('change', filterJobs);
     });
   </script>
 </body>
